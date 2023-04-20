@@ -7,8 +7,8 @@ app.use(express.urlencoded({ extended: false }));
 
 // app.use('/v1/api_document/',require('./model/v1/api_document/index'));
 
-// app.engine('html', require('ejs').renderFile);
-// app.set('view engine', 'html');
+app.engine('html', require('ejs').renderFile);
+app.set('view engine', 'html');
 
 
 var auth = require('./model/v1/auth/route');

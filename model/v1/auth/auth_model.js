@@ -160,10 +160,15 @@ var auth = {
 
     resetpassword: function (request, id, callback) {
         // console.log("authmodel",request);
+        var password;
+        middleware.encryption(request.resetpass, function (response) {
+            password = response;
+        })
+        
         var onetime = {
             is_forgot: "0"
         }
-        con.query(`UPDATE tbl_user SET password = ?, is_forgot = ? WHERE id = ${id} `, [request.resetpass, onetime.is_forgot], function (error, result) {
+        con.query(`UPDATE tbl_user SET password = ?, is_forgot = ? WHERE id = ${id} `, [password, onetime.is_forgot], function (error, result) {
             if (!error) {
                 callback("1", "reset_keyword_success_message", null);
             } else {
