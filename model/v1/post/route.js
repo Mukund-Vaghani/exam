@@ -87,4 +87,22 @@ router.post('/addcomment', function(req,res){
         })
 })
 
+router.post('/commentlisting', function(req,res){
+    middleware.decryption(req.body, function(request){
+        var rules = {
+            post_id: 'required|numeric'
+        }
+
+        var message = {
+            require: req.language.reset_keyword_required_message
+        }
+
+        if(middleware.checkValidationRules(res,request,rules,message)){
+            auth.commentList(request, function(code,message,data){
+                middleware.send_response(req,res,code,message,data);
+            })
+        }
+    })
+})
+
 module.exports = router;

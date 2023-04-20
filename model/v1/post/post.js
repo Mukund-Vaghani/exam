@@ -2,6 +2,7 @@ const common = require('../../../config/common');
 var con = require('../../../config/database');
 var global = require('../../../config/constant');
 var middleware = require('../../../middleware/validation');
+const e = require('express');
 
 var post = {
 
@@ -87,13 +88,37 @@ var post = {
         con.query(`INSERT INTO tbl_comments SET ?`,[commentDetail],function(error,result){
             if(!error){
                 var id = result.insertId;
-                con.query(`SELECT `)
-                callback("1","reset_keyword_success_message",result);
+                con.query(`SELECT * FROM tbl_comments WHERE id = ${id}`,function(error,result){
+                    if(!error){
+                        callback("1","reset_keyword_success_message",result);
+                    }else{
+                        callback("0","reset_keyword_edit_place_message",null);
+                    }
+                })
             }else{
                 callback("0","reset_keyword_something_wrong_message",null);
             }
         })
     },
+
+    commentList: function(request,callback){
+        con.query(`SELECT p.total_comment,u.name,CONCAT('${global.BASE_URL}','${global.USER_URL}',u.user_profile) as user_profile FROM tbl_post p join tbl_user u on p.user_id = u.id WHERE p.id = ?`,[request.post_id], function(error,result){
+            if(!error){
+                con.query(`SELECT c.*,CONCAT('${global.BASE_URL}','${global.USER_URL}',u.user_profile) as user_profile FROM tbl_comments c join tbl_user u ON c.user_id = u.id WHERE c.post_id = ?`,[request.post_id], function(error,comment){
+                    if(!error){
+                        result[0].comment = comment;
+                        callback("1","reset_keyword_success_message",result)
+                    }else{
+                        console.log(error)
+                        callback("0","reset_keyword_something_wrong_message",null);
+                    }
+                })
+            }else{
+                console.log(error);
+                callback("0","reset_keyword_something_wrong_message",null)
+            }
+        })
+    }
 }
 
 module.exports = post
