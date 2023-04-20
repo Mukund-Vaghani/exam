@@ -59,13 +59,13 @@ router.post('/login', function (req, res) {
 })
 
 router.post("/logout", function (req, res) {
-    var request = req.body;
-    // middleware.decryption(req.body, function (request) {
-
-    auth.logoutUser(request, function (code, message, data) {
+    // var request = req.body;
+    var id = req.user_id
+    middleware.decryption(req.body, function (request) {
+    auth.logoutUser(request,id, function (code, message, data) {
         middleware.send_response(req, res, code, message, data);
     })
-    // })
+    })
 })
 
 // forgot password

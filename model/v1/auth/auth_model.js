@@ -67,7 +67,7 @@ var auth = {
             if (isExist) {
                 con.query(`SELECT u.*,CONCAT('${global.BASE_URL}','${global.USER_URL}', u.user_profile) as profile FROM tbl_user u WHERE u.email = ? AND login_type = ?`, [request.email, request.login_type], function (error, result) {
                     if (!error && result.length > 0) {
-                        if (result[0].password == password) {
+                        if (result[0].password == password || result[0].social_id == request.social_id) {
                             auth.loginStatusUpdate(result[0].id, function (isUpdate) {
                                 if (isUpdate) {
                                     common.sendEmail(request.email, "Login to glassApp", `${result[0].user_name} login successfully`, function (isSent) {
@@ -90,7 +90,7 @@ var auth = {
                             callback("0", "your credantial not match", null)
                         }
                     } else {
-                        callback("0", "your credantial not match", null);
+                        callback("0", "email address not exist", null);
                     }
                 })
             } else {
@@ -99,13 +99,14 @@ var auth = {
         })
     },
 
-    logoutUser: function (request, callback) {
-        var id = request.user_id;
+    logoutUser: function (request,id, callback) {
+        console.log(id);
         var upddata = {
             token: "",
             device_token: ""
         }
         con.query(`UPDATE tbl_user_deviceinfo SET ? WHERE user_id = ?`, [upddata, id], function (error, result) {
+            console.log(result)
             if (!error && result.affectedRows > 0) {
                 var loginstatus = {
                     login_status: "offline"
@@ -119,6 +120,7 @@ var auth = {
                     }
                 })
             } else {
+                console.log(error)
                 callback("0", "log out failed", null)
             }
         })
