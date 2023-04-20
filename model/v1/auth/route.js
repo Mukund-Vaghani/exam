@@ -9,52 +9,52 @@ var path = require('path');
 router.post('/signup', function (req, res) {
     // var request = req.body;
     middleware.decryption(req.body, function (request) {
-    var rules = {
-        login_type: 'required|in:s,f,g',
-        social_id: 'required_if:login_type,f,g',
-        name: 'required',
-        email: 'required|email',
-        password: 'required_if:login_type,s',
-        office_phone: 'required',
-        organization_name: 'required',
-        cell_phone: 'required',
-        office_address: 'required',
-        office_city: 'required',
-        office_state: 'required'
-    }
+        var rules = {
+            login_type: 'required|in:s,f,g',
+            social_id: 'required_if:login_type,f,g',
+            name: 'required',
+            email: 'required|email',
+            password: 'required_if:login_type,s',
+            office_phone: 'required',
+            organization_name: 'required',
+            cell_phone: 'required',
+            office_address: 'required',
+            office_city: 'required',
+            office_state: 'required'
+        }
 
-    var message = {
-        require: req.language.reset_keyword_required_message,
-        email: req.language.reset_keyword_invalid_email_message
-    }
+        var message = {
+            require: req.language.reset_keyword_required_message,
+            email: req.language.reset_keyword_invalid_email_message
+        }
 
-    if (middleware.checkValidationRules(res, request, rules, message)) {
-        auth.signup(request, function (code, message, data) {
-            middleware.send_response(req, res, code, message, data);
-        })
-    }
+        if (middleware.checkValidationRules(res, request, rules, message)) {
+            auth.signup(request, function (code, message, data) {
+                middleware.send_response(req, res, code, message, data);
+            })
+        }
     })
 })
 
 router.post('/login', function (req, res) {
     // var request = req.body;
     middleware.decryption(req.body, function (request) {
-    var rules = {
-        login_type: 'required|in:s,f,g',
-        email: 'required|email',
-        password: 'required_if:login_type,s'
-    }
+        var rules = {
+            login_type: 'required|in:s,f,g',
+            email: 'required|email',
+            password: 'required_if:login_type,s'
+        }
 
-    var message = {
-        require: req.language.reset_keyword_required_message,
-        email: req.language.reset_keyword_invalid_email_message
-    }
+        var message = {
+            require: req.language.reset_keyword_required_message,
+            email: req.language.reset_keyword_invalid_email_message
+        }
 
-    if (middleware.checkValidationRules(res, request, rules, message)) {
-        auth.loginUser(request, function (code, message, data) {
-            middleware.send_response(req, res, code, message, data);
-        })
-    }
+        if (middleware.checkValidationRules(res, request, rules, message)) {
+            auth.loginUser(request, function (code, message, data) {
+                middleware.send_response(req, res, code, message, data);
+            })
+        }
     })
 })
 
@@ -62,32 +62,33 @@ router.post("/logout", function (req, res) {
     // var request = req.body;
     var id = req.user_id
     middleware.decryption(req.body, function (request) {
-    auth.logoutUser(request,id, function (code, message, data) {
-        middleware.send_response(req, res, code, message, data);
-    })
+        auth.logoutUser(request, id, function (code, message, data) {
+            middleware.send_response(req, res, code, message, data);
+        })
     })
 })
+
 
 // forgot password
 router.post('/forgotpass', function (req, res) {
     // var request = req.body;
 
     middleware.decryption(req.body, function (request) {
-    var rules = {
-        login_type: 'required',
-        email: 'required|email'
-    }
+        var rules = {
+            login_type: 'required',
+            email: 'required|email'
+        }
 
-    var message = {
-        require: req.language.reset_keyword_required_message,
-        email: req.language.reset_keyword_invalid_email_message
-    }
+        var message = {
+            require: req.language.reset_keyword_required_message,
+            email: req.language.reset_keyword_invalid_email_message
+        }
 
-    if (middleware.checkValidationRules(res, request, rules, message)) {
-        auth.forgotpassword(request, function (code, message, data) {
-            middleware.send_response(req, res, code, message, data);
-        })
-    }
+        if (middleware.checkValidationRules(res, request, rules, message)) {
+            auth.forgotpassword(request, function (code, message, data) {
+                middleware.send_response(req, res, code, message, data);
+            })
+        }
     })
 })
 

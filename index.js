@@ -12,14 +12,14 @@ app.set('view engine', 'html');
 
 
 var auth = require('./model/v1/auth/route');
-// var place = require('./model/v1/place/route');
+var post = require('./model/v1/post/route');
 
 app.use('/', require('./middleware/validation').extractheaderlanguage)
 app.use('/', require('./middleware/validation').validateApiKey);
 app.use('/', require('./middleware/validation').validateUserToken);
 
 app.use('/api/v1/auth', auth);
-// app.use('/api/v1/place', place);
+app.use('/api/v1/post', post);
 
 try {
     app.listen(process.env.PORT);

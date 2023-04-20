@@ -1,6 +1,6 @@
 var global = {
     BASE_URL: "http://localhost/Task/exam/",
     USER_URL: "public/user/",
-    REST_URL: "public/product/"
+    POST_URL: "public/post/"
 }
 module.exports = global;

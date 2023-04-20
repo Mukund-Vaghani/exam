@@ -164,7 +164,7 @@ var auth = {
         middleware.encryption(request.resetpass, function (response) {
             password = response;
         })
-        
+
         var onetime = {
             is_forgot: "0"
         }
@@ -191,7 +191,7 @@ var auth = {
     },
 
     getUserDetail: function (id, callback) {
-        con.query(`SELECT *,CONCAT('${global.BASE_URL}','${global.USER_URL}', user_profile) as profile FROM tbl_user WHERE id = ?`, [id], function (error, result) {
+        con.query(`SELECT u.*,CONCAT('${global.BASE_URL}','${global.USER_URL}', u.user_profile) as profile,ud.token,ud.device_type,device_token FROM tbl_user u join tbl_user_deviceinfo ud on u.id = ud.user_id WHERE u.id = ?`, [id], function (error, result) {
             if (!error && result.length > 0) {
                 callback(result);
             } else {
