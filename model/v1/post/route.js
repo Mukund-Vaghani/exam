@@ -31,13 +31,13 @@ router.post('/addpost', function (req, res) {
 router.post('/homescreen', function (req, res) {
 
     middleware.decryption(req.body, function (request) {
-    var rules = {
-        search: '',
-    }
+        var rules = {
+            search: '',
+        }
 
-    var message = {
-        require: req.language.reset_keyword_required_message
-    }
+        var message = {
+            require: req.language.reset_keyword_required_message
+        }
 
         if (middleware.checkValidationRules(res, request, rules, message)) {
             auth.homePage(request, function (code, message, data) {
@@ -65,7 +65,7 @@ router.get('/mypost', function (req, res) {
     })
 })
 
-router.post('/addcomment', function(req,res){
+router.post('/addcomment', function (req, res) {
 
     var id = req.user_id;
     middleware.decryption(req.body, function (request) {
@@ -74,21 +74,21 @@ router.post('/addcomment', function(req,res){
             post_id: 'required',
             comment_text: 'required'
         }
-    
+
         var message = {
             require: req.language.reset_keyword_required_message
         }
-    
-            if (middleware.checkValidationRules(res, request, rules, message)) {
-                auth.postComment(request,id, function (code, message, data) {
-                    middleware.send_response(req, res, code, message, data);
-                })
-            }
-        })
+
+        if (middleware.checkValidationRules(res, request, rules, message)) {
+            auth.postComment(request, id, function (code, message, data) {
+                middleware.send_response(req, res, code, message, data);
+            })
+        }
+    })
 })
 
-router.post('/commentlisting', function(req,res){
-    middleware.decryption(req.body, function(request){
+router.post('/commentlisting', function (req, res) {
+    middleware.decryption(req.body, function (request) {
         var rules = {
             post_id: 'required|numeric'
         }
@@ -97,9 +97,97 @@ router.post('/commentlisting', function(req,res){
             require: req.language.reset_keyword_required_message
         }
 
-        if(middleware.checkValidationRules(res,request,rules,message)){
-            auth.commentList(request, function(code,message,data){
-                middleware.send_response(req,res,code,message,data);
+        if (middleware.checkValidationRules(res, request, rules, message)) {
+            auth.commentList(request, function (code, message, data) {
+                middleware.send_response(req, res, code, message, data);
+            })
+        }
+    })
+})
+
+
+
+
+// ************************************** EVENT **************************************
+
+
+
+router.post('/addevent', function (req, res) {
+    var id = req.user_id;
+    middleware.decryption(req.body, function (request) {
+        var rules = {
+            event_name: 'required',
+            event_address: 'required',
+            event_date: 'required',
+            event_time: 'required',
+            event_description: 'required',
+            event_image: 'required',
+            event_member: 'required',
+            event_nonmember: 'required'
+        }
+
+        var message = {
+            require: req.language.reset_keyword_required_message
+        }
+
+        if (middleware.checkValidationRules(res, request, rules, message)) {
+            auth.addEvent(request, id, function (code, message, data) {
+                middleware.send_response(req, res, code, message, data);
+            })
+        }
+    })
+})
+
+router.post('/eventsearch', function (req, res) {
+    middleware.decryption(req.body, function (request) {
+        var rules = {
+            date: 'required|date',
+        }
+
+        var message = {
+            require: req.language.reset_keyword_required_message
+        }
+
+        if (middleware.checkValidationRules(res, request, rules, message)) {
+            auth.searchEvent(request, function (code, message, data) {
+                middleware.send_response(req, res, code, message, data);
+            })
+        }
+    })
+})
+
+
+
+// ************************************ FAQ ****************************************
+
+router.post('/faq', function (req, res) {
+    middleware.decryption(req.body, function (request) {
+        auth.faq(request, function (code, message, data) {
+            middleware.send_response(req, res, code, message, data);
+        })
+    })
+})
+
+
+// ************************************ CONTACT US **********************************
+
+router.post('/contactus', function(req,res){
+    var id = req.user_id;
+    middleware.decryption(req.body, function(request){
+        var rules = {
+            title: 'required',
+            email: 'required|email',
+            message: 'required'
+        }
+
+        var message = {
+            require: req.language.reset_keyword_required_message,
+            email: req.language.reset_keyword_invalid_email_message
+        }
+
+        if (middleware.checkValidationRules(res, request, rules, message)) {
+            auth.contactUs(request,id, function (code, message, data) {
+                middleware.send_response(req, res, code, message, data);
             })
         }
     })
