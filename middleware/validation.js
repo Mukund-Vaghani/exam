@@ -10,7 +10,7 @@ var shakey = cryptoLib.getHashSha256(process.env.KEY, 32)
 var middleware = {
 
     checkValidationRules: function (res, request, rules, message) {
-        
+        console.log("QQQQQQQ",request.lang);
         const v = Validator.make(request, rules, message);
         if (v.fails()) {
             const errors = v.getErrors();

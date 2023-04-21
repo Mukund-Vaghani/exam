@@ -181,13 +181,15 @@ var auth = {
 
     // common function
     checkUserEmail: function (request, callback) {
-        con.query(`SELECT * FROM tbl_user WHERE email = ?`, [request.email], function (error, result) {
-            if (!error && result.length > 0) {
-                callback(true);
-            } else {
-                callback(false);
-            }
-        })
+        // if(login_type == 's'){
+            con.query(`SELECT * FROM tbl_user WHERE email = ?`, [request.email], function (error, result) {
+                if (!error && result.length > 0) {
+                    callback(true);
+                } else {
+                    callback(false);
+                }
+            })
+        // }
     },
 
     getUserDetail: function (id, callback) {

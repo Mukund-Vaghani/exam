@@ -2,6 +2,7 @@ const common = require('../../../config/common');
 var con = require('../../../config/database');
 var global = require('../../../config/constant');
 var middleware = require('../../../middleware/validation');
+var asyncLoop = require('node-async-loop');
 const e = require('express');
 
 var post = {
@@ -36,7 +37,13 @@ var post = {
             var condition = `WHERE p.is_active = 1 AND p.is_delete = 0 ORDER BY id DESC`;
         }
 
-        var sql = `SELECT p.*,u.name FROM tbl_post p join tbl_user u on p.user_id = u.id `;
+        var sql = `SELECT p.*,CASE 
+        WHEN TIMESTAMPDIFF(SECOND, p.active_at, NOW())<60 THEN CONCAT(TIMESTAMPDIFF(MINUTE,p.active_at,NOW()),' ','second ago')
+        WHEN TIMESTAMPDIFF(MINUTE, p.active_at, NOW())<60 THEN CONCAT(TIMESTAMPDIFF(MINUTE,p.active_at,NOW()),' ','minutes ago')
+        WHEN TIMESTAMPDIFF(HOUR,p.active_at,NOW())<24 THEN  CONCAT(TIMESTAMPDIFF(HOUR,p.active_at,NOW()),' ','hours ago')
+        WHEN TIMESTAMPDIFF(DAY,p.active_at,NOW())<31 THEN CONCAT(TIMESTAMPDIFF(DAY,p.active_at,NOW()),' ','days ago')
+        ELSE DATE_FORMAT(DATE(p.active_at), "%d %M, %Y")
+        END AS post_time,CONCAT('${global.BASE_URL}','${global.POST_URL}',image) as post_image,u.name FROM tbl_post p join tbl_user u on p.user_id = u.id `;
         sql += condition;
 
         con.query(sql, function (error, result) {
@@ -121,54 +128,7 @@ var post = {
     },
 
 
-
-// ******************************** EVENT ************************************************
-
-
-
-    addEvent: function(request,id,callback){
-        var eventDetail = {
-            user_id: id,
-            event_name: request.event_name,
-            event_address: request.event_address,
-            event_date: request.event_date,
-            event_time: request.event_time,
-            event_description: request.event_description,
-            event_image: request.event_image,
-            event_member: request.event_member,
-            event_nonmember: request.event_nonmember
-        }
-        con.query(`INSERT INTO tbl_event SET ?`,[eventDetail], function(error,result){
-            if(!error){
-                var event_id = result.insertId;
-                con.query(`SELECT *,CONCAT('${global.BASE_URL}','${global.EVENT_URL}',event_image) as event_image FROM tbl_event WHERE id = ?`,[event_id], function(error,result){
-                    if(!error){
-                        callback("1","reset_keyword_add_message",result)
-                    }else{
-                        callback("0","reset_keyword_edit_place_message",null);
-                    }
-                })
-            }else{
-                callback("0","reset_keyword_something_wrong_message",null);
-            }
-        })
-    },
-
-    searchEvent: function(request,callback){
-        con.query(`SELECT *,CONCAT('${global.BASE_URL}','${global.EVENT_URL}',event_image) as event_image FROM tbl_event WHERE event_date IN ('${request.date}') ORDER BY event_time`,function(error,result){
-            if(!error){
-                callback("1","reset_keyword_success_message",result)
-            }else{
-                callback("0","reset_keyword_something_wrong_message",null);
-            }
-        })
-    },
-
-
-
 // ********************************* FAQ *************************************************
-
-
 
     faq: function(request,callback){
         if (request.search != undefined) {
@@ -189,21 +149,6 @@ var post = {
             }
         })
     },
-
-
-// *********************************** CONTACT US *****************************************
-
-
-    contactUs: function(request,callback){
-        var contactDetail = {
-            title: request.title,
-            email: request.email,
-            message: request.message
-        }
-
-        con.query(`INSERT INTO tbl_contact_us SET ?`)
-    }
-
 }
 
 module.exports = post

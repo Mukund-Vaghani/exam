@@ -7,7 +7,6 @@ var path = require('path');
 // const { request } = require('http');
 
 router.post('/signup', function (req, res) {
-    // var request = req.body;
     middleware.decryption(req.body, function (request) {
         var rules = {
             login_type: 'required|in:s,f,g',
@@ -22,9 +21,9 @@ router.post('/signup', function (req, res) {
             office_city: 'required',
             office_state: 'required'
         }
-
+        
         var message = {
-            require: req.language.reset_keyword_required_message,
+            required: req.language.reset_keyword_required_message,
             email: req.language.reset_keyword_invalid_email_message
         }
 
@@ -46,7 +45,7 @@ router.post('/login', function (req, res) {
         }
 
         var message = {
-            require: req.language.reset_keyword_required_message,
+            required: req.language.reset_keyword_required_message,
             email: req.language.reset_keyword_invalid_email_message
         }
 
@@ -80,7 +79,7 @@ router.post('/forgotpass', function (req, res) {
         }
 
         var message = {
-            require: req.language.reset_keyword_required_message,
+            required: req.language.reset_keyword_required_message,
             email: req.language.reset_keyword_invalid_email_message
         }
 
