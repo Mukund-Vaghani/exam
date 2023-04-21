@@ -30,7 +30,11 @@ var auth = {
         }
         auth.checkUserEmail(request, function (isExist) {
             if (isExist) {
-                callback("0", "email is already exist", null)
+                if(login_type == 's'){
+                    callback("0", "email is already exist", null)
+                }else{
+                    callback("0","social id is already exist",null)
+                }
             } else {
                 con.query(`INSERT INTO tbl_user SET ?`, [userDetail], function (error, result) {
                     if (!error) {
@@ -57,45 +61,48 @@ var auth = {
     },
 
     loginUser: function (request, callback) {
-
         var password;
         middleware.encryption(request.password, function (response) {
             password = response;
-        })
+            auth.checkUserEmail(request, function (isExist) {
+                if (isExist) {
+                    // con.query(`SELECT u.*,CONCAT('${global.BASE_URL}','${global.USER_URL}', u.user_profile) as profile FROM tbl_user u WHERE u.email = ? AND login_type = ?`, [request.email, request.login_type], function (error, result) {
 
-        auth.checkUserEmail(request, function (isExist) {
-            if (isExist) {
-                con.query(`SELECT u.*,CONCAT('${global.BASE_URL}','${global.USER_URL}', u.user_profile) as profile FROM tbl_user u WHERE u.email = ? AND login_type = ?`, [request.email, request.login_type], function (error, result) {
-                    if (!error && result.length > 0) {
-                        if (result[0].password == password || result[0].social_id == request.social_id) {
-                            auth.loginStatusUpdate(result[0].id, function (isUpdate) {
-                                if (isUpdate) {
-                                    common.sendEmail(request.email, "Login to glassApp", `${result[0].user_name} login successfully`, function (isSent) {
-                                        if (isSent) {
-                                            var id = result[0].id;
-                                            common.checkUpdateToken(id, request, function (token) {
-                                                result[0].login_status = "online";
-                                                result[0].token = token;
-                                                callback("1", "reset_keyword_login_message", result);
-                                            });
-                                        } else {
-                                            callback("0", "reset_keyword_login_faile_message", null);
-                                        }
-                                    })
-                                } else {
-                                    callback("0", "status not update", null)
-                                }
-                            })
+                    var sql = `SELECT * FROM tbl_user AS u WHERE (u.login_type = '${request.login_type}' AND u.email = '${request.email}' AND u.password = '${password}') 
+                    OR(u.login_type != '${request.login_type}' AND u.email = '${request.email}' AND u.social_id = '${request.social_id}')`
+                    con.query(sql,(error,result)=>{
+                        console.log(sql);
+                        if (!error && result.length > 0) {
+                            // if (result[0].password == password || result[0].social_id == request.social_id) {
+                                auth.loginStatusUpdate(result[0].id, function (isUpdate) {
+                                    if (isUpdate) {
+                                        common.sendEmail(request.email, "Login to glassApp", `${result[0].user_name} login successfully`, function (isSent) {
+                                            if (isSent) {
+                                                var id = result[0].id;
+                                                common.checkUpdateToken(id, request, function (token) {
+                                                    result[0].login_status = "online";
+                                                    result[0].token = token;
+                                                    callback("1", "reset_keyword_login_message", result);
+                                                });
+                                            } else {
+                                                callback("0", "reset_keyword_login_faile_message", null);
+                                            }
+                                        })
+                                    } else {
+                                        callback("0", "status not update", null)
+                                    }
+                                })
+                            // } else {
+                            //     callback("0", "your credantial not match", null)
+                            // }
                         } else {
-                            callback("0", "your credantial not match", null)
+                            callback("0", "email address not exist", null);
                         }
-                    } else {
-                        callback("0", "email address not exist", null);
-                    }
-                })
-            } else {
-                callback("0", "User not exist, You have to signup first", null)
-            }
+                    })
+                } else {
+                    callback("0", "User not exist, You have to signup first", null)
+                }
+            })
         })
     },
 

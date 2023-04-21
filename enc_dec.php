@@ -87,22 +87,32 @@
 </body>
 <script type="text/javascript">
     function CopyToClipboard(containerid) {
-        if (document.selection) {
-            var range = document.body.createTextRange();
-            range.moveToElementText(document.getElementById(containerid));
-            range.select().createTextRange();
-            document.execCommand("Copy");
+        var container = document.getElementById(containerid);
+        if (!container) return;
 
-        } else if (window.getSelection) {
-            var range = document.createRange();
-            document.getElementById(containerid).style.display = "block";
-            range.selectNode(document.getElementById(containerid));
-            window.getSelection().addRange(range);
-            document.execCommand("Copy");
-        }
-    }
-    function clearContents(containerid) {
-        document.getElementById(containerid).value="";
+        container.style.display = "block";
+        var range = document.createRange();
+        range.selectNode(container);
+        window.getSelection().addRange(range);
+
+        navigator.clipboard.writeText(container.innerText).then(function() {
+            window.getSelection().removeAllRanges();
+            var successMessage = document.createElement("div");
+            successMessage.innerHTML = "Copied Successfully!";
+            successMessage.style.backgroundColor = "green";
+            successMessage.style.color = "white";
+            successMessage.style.padding = "10px";
+            successMessage.style.position = "fixed";
+            successMessage.style.top = "50%";
+            successMessage.style.left = "50%";
+            successMessage.style.transform = "translate(-50%, -50%)";
+            document.body.appendChild(successMessage);
+            setTimeout(function() {
+                successMessage.remove();
+            }, 2500);
+        }, function(err) {
+            console.error('Failed to copy text: ', err);
+        });
     }
 </script>
 </html>
@@ -110,8 +120,10 @@
 <?php
 
 $encryptionMethod = 'AES-256-CBC';
-$secret = hash('sha256', 'rkV0WsKzI8rzTlHRKQKIacmr0w2cwLjs');
-$iv = 'rkV0WsKzI8rzTlHR';
+//$secret = hash('sha256', 'rkV0WsKzI8rzTlHRKQKIacmr0w2cwLjs');
+$secret = hash('sha256', 'JetpJHmvCRbueBMLHwX8lE880N82ifrj');
+//$iv = 'rkV0WsKzI8rzTlHR';
+$iv = 'JetpJHmvCRbueBML';
 if (isset($_REQUEST['type']) && isset($_REQUEST['data']) && $_REQUEST['data'] != '') {
     if ($_REQUEST['type'] == 'encrypt') {
         $plaintext = trim($_REQUEST['data']);

@@ -10,8 +10,9 @@ var shakey = cryptoLib.getHashSha256(process.env.KEY, 32)
 var middleware = {
 
     checkValidationRules: function (res, request, rules, message) {
-        console.log("QQQQQQQ",request.lang);
+        console.log("check valida",request);
         const v = Validator.make(request, rules, message);
+        
         if (v.fails()) {
             const errors = v.getErrors();
             for (var key in errors) {
@@ -21,11 +22,11 @@ var middleware = {
                     code: '0',
                     message: error
                 }
-                // var response = response_data;
-                middleware.encryption(response_data, function (response) {
+                var response = response_data;
+                // middleware.encryption(response_data, function (response) {
                     res.status(200);
                     res.send(response);
-                })
+                // })
                 return false;
             }
         } else {
@@ -34,11 +35,11 @@ var middleware = {
     },
 
     send_response: function (req, res, code, message, data) {
-        this.getMessage(req.lang, message, (trans_message) => {
+        //this.getMessage(req.lang, message, (trans_message) => {
             if (data == null) {
                 var response_data = {
                     code: code,
-                    message: trans_message
+                    message: message
                 }
                 // var response = response_data
                 middleware.encryption(response_data, function (response) {
@@ -49,7 +50,7 @@ var middleware = {
                 console.log(data);
                 var response_data = {
                     code: code,
-                    message: trans_message,
+                    message: message,
                     data: data
                 }
                 // var response = response_data;
@@ -58,7 +59,7 @@ var middleware = {
                     res.send(response);
                 })
             }
-        })
+        //})
     },
 
     getMessage: function (langauge, message, callback) {
@@ -195,7 +196,7 @@ var middleware = {
 
 
     decryption: function (req, callback) {
-        if (req != undefined && Object.keys(req).length !== 0) {
+        if (req != undefined && req != "") {
             try {
                 var request = JSON.parse(cryptoLib.decrypt(req, shakey, process.env.IV));
                 request.lang = req.lang;
@@ -211,7 +212,7 @@ var middleware = {
     encryption: function (response_data, callback) {
         var response = cryptoLib.encrypt(JSON.stringify(response_data), shakey, process.env.IV);
         callback(response);
-    }
+    },
 
 }
 
