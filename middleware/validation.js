@@ -10,7 +10,7 @@ var shakey = cryptoLib.getHashSha256(process.env.KEY, 32)
 var middleware = {
 
     checkValidationRules: function (res, request, rules, message) {
-        console.log("QQQQQQQ",request.lang);
+        // console.log("QQQQQQQ",request.lang);
         const v = Validator.make(request, rules, message);
         if (v.fails()) {
             const errors = v.getErrors();
@@ -33,7 +33,7 @@ var middleware = {
         }
     },
 
-    send_response: function (req, res, code, message, data) {
+    send_response: function (res, req, code, message, data) {
         this.getMessage(req.lang, message, (trans_message) => {
             if (data == null) {
                 var response_data = {
@@ -46,7 +46,7 @@ var middleware = {
                     res.send(response);
                 })
             } else {
-                console.log(data);
+                // console.log(data);
                 var response_data = {
                     code: code,
                     message: trans_message,
@@ -54,8 +54,8 @@ var middleware = {
                 }
                 // var response = response_data;
                 middleware.encryption(response_data, function (response) {
-                    res.status(200);
-                    res.send(response);
+                    // res.status(200);
+                    res.status(200).send(response);
                 })
             }
         })
@@ -72,7 +72,7 @@ var middleware = {
     extractheaderlanguage: function (req, res, callback) {
         var headerlang = (req.headers['accept-language'] != undefined && req.headers['accept-language'] != "") ? req.headers['accept-language'] : "en";
         req.lang = headerlang;
-        // console.log(headerlang)
+        // console.log("ssssss",headerlang)
 
         req.language = (headerlang == 'en') ? en : gu;
         // console.log("get header",req.language);
@@ -143,7 +143,7 @@ var middleware = {
             if (valid_token != "") {
                 try {
                     var dec_token = cryptoLib.decrypt(valid_token, shakey, process.env.IV)
-                    // console.log(dec_token);
+                    console.log(dec_token);
                     if (dec_token != "") {
                         con.query(`SELECT * FROM tbl_user_deviceinfo WHERE token = ?`, [dec_token], function (error, result) {
                             if (!error && result.length > 0) {
