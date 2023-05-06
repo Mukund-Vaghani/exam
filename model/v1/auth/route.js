@@ -37,7 +37,10 @@ router.post('/signup', function (req, res) {
 
 router.post('/login', function (req, res) {
     // var request = req.body;
+    console.log(req.body)
     middleware.decryption(req.body, function (request) {
+
+        console.log("1111111111111", request);
         var rules = {
             login_type: 'required|in:s,f,g',
             email: 'required|email',

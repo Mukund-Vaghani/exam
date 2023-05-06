@@ -2,6 +2,8 @@ const common = require('../../../config/common');
 var con = require('../../../config/database');
 var global = require('../../../config/constant');
 var middleware = require('../../../middleware/validation');
+var cryptoLib = require('cryptlib');
+var shakey = cryptoLib.getHashSha256(process.env.KEY, 32)
 
 var auth = {
 
@@ -58,16 +60,17 @@ var auth = {
 
     loginUser: function (request, callback) {
 
-        var password;
-        middleware.encryption(request.password, function (response) {
-            password = response;
-        })
-
         auth.checkUserEmail(request, function (isExist) {
             if (isExist) {
                 con.query(`SELECT u.*,CONCAT('${global.BASE_URL}','${global.USER_URL}', u.user_profile) as profile FROM tbl_user u WHERE u.email = ? AND login_type = ?`, [request.email, request.login_type], function (error, result) {
                     if (!error && result.length > 0) {
-                        if (result[0].password == password || result[0].social_id == request.social_id) {
+
+                        if (request.login_type == 's' && cryptoLib.encrypt(request.password, shakey, process.env.IV) != result[0].password) {
+                            callback("0", "your credantial not match", null)
+                        } else if (request.login_type != 's' && request.social_id != result[0].social_id) {
+                            callback("0", "your credantial not match", null)
+                        } else {
+
                             auth.loginStatusUpdate(result[0].id, function (isUpdate) {
                                 if (isUpdate) {
                                     common.sendEmail(request.email, "Login to glassApp", `${result[0].user_name} login successfully`, function (isSent) {
@@ -86,8 +89,6 @@ var auth = {
                                     callback("0", "status not update", null)
                                 }
                             })
-                        } else {
-                            callback("0", "your credantial not match", null)
                         }
                     } else {
                         callback("0", "email address not exist", null);
