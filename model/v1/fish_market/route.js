@@ -1,28 +1,25 @@
 var express = require('express');
 var router = express.Router();
 var middleware = require('../../../middleware/validation');
-var auth = require('./contact');
+var market = require('./fish_market');
 var multer = require('multer');
 var path = require('path');
 
-router.post('/contactus', function(req,res){
-    var id = req.user_id;
-    middleware.decryption(req.body, function(request){
+
+router.post('/market_listing', function (req, res) {
+    middleware.decryption(req.body, function (request) {
         var rules = {
-            title: 'required',
-            email: 'required|email',
-            message: 'required'
+            service_category_id: 'required',
         }
 
-        var message = {
-            required: req.language.reset_keyword_required_message,
-            email: req.language.reset_keyword_invalid_email_message
+        var messages = {
+            required: req.language.reset_keyword_required_message
         }
 
-        if (middleware.checkValidationRules(res, request, rules, message)) {
-            auth.contactUs(request,id, function (code, message, data) {
-                middleware.send_response(req, res, code, message, data);
-            })
+        if (middleware.checkValidationRules(res, request, rules, messages)) {
+            market.market_listing(request, function (code, message, data) {
+                middleware.send_response(res, req, code, message, data);
+            });
         }
     })
 })

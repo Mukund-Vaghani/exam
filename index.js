@@ -11,23 +11,23 @@ app.engine('html', require('ejs').renderFile);
 app.set('view engine', 'html');
 
 
-var auth = require('./model/v1/auth/route');
-var post = require('./model/v1/post/route');
-var event = require('./model/v1/event/route');
-var contact = require('./model/v1/contact/route')
+// var auth = require('./model/v1/auth/route');
+var product = require('./model/v1/product/route');
+var user = require('./model/v1/user/route');
+var fish_market = require('./model/v1/fish_market/route')
 
 app.use('/', require('./middleware/validation').extractheaderlanguage)
 app.use('/', require('./middleware/validation').validateApiKey);
 app.use('/', require('./middleware/validation').validateUserToken);
 
-app.use('/api/v1/auth', auth);
-app.use('/api/v1/post', post);
-app.use('/api/v1/event',event);
-app.use('/api/v1/contact',contact);
+// app.use('/api/v1/auth', auth);
+app.use('/api/v1/product', product);
+app.use('/api/v1/user',user);
+app.use('/api/v1/fish_market',fish_market);
 
 try {
     app.listen(process.env.PORT);
-    console.log('app listing on port : 8192');
+    console.log('app listing on port : 8181');
 } catch {
     console.log('connection fails');
 }
