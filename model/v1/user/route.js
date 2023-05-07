@@ -67,7 +67,7 @@ router.post('/add_cards', function (req, res) {
 
 router.post('/saved_cards', function (req, res) {
     middleware.decryption(req.body, function (request) {
-        auth.getSavedCards(req, function (code, message, data) {
+        auth.getSavedCards(request, function (code, message, data) {
             middleware.send_response(res, req, code, message, data);
         });
     })
@@ -75,7 +75,7 @@ router.post('/saved_cards', function (req, res) {
 
 router.post('/cardtype', function (req, res) {
     middleware.decryption(req.body, function (request) {
-        auth.cardTypes(req, function (code, message, data) {
+        auth.cardTypes(request, function (code, message, data) {
             middleware.send_response(res, req, code, message, data);
         });
     })
@@ -89,12 +89,11 @@ router.post('/addtocart', function (req, res) {
             sub_total: "required",
             unit: "required",
             price: "required"
-            // cutting_id : ""
         };
         var messages = {
             required: req.language.required
         }
-        if (middleware.checkValidation(res, request, rules, messages)) {
+        if (middleware.checkValidationRules(res, request, rules, messages)) {
             auth.addToCart(request, function (code, message, data) {
                 middleware.send_response(res, req, code, message, data);
             });
@@ -105,22 +104,18 @@ router.post('/addtocart', function (req, res) {
 router.post('/shopdistance', function (req, res) {
     var id = req.user_id;
     middleware.decryption(req.body, function (request) {
-        // if (validate.checkValidation(res, request, rules, messages)) {
         auth.FindDistance(id, request, function (code, message, data) {
             middleware.send_response(res, req, code, message, data);
         });
-        // };
     })
 });
 
 router.post('/saveaddress', function (req, res) {
     var id = req.user_id;
     middleware.decryption(req.body, function (request) {
-        // if (validate.checkValidation(res, request, rules, messages)) {
         auth.SavedAddress(id, request, function (code, message, data) {
             middleware.send_response(res, req, code, message, data);
         });
-        // };
     })
 });
 
@@ -149,7 +144,7 @@ router.post('/addnewaddress', function (req, res) {
         var messages = {
             required: req.language.required
         }
-        if (middleware.checkValidation(res, request, rules, messages)) {
+        if (middleware.checkValidationRules(res, request, rules, messages)) {
             auth.addNewAddress(request, function (code, message, data) {
                 middleware.send_response(res, req, code, message, data);
             });
@@ -165,8 +160,8 @@ router.post('/favorite', function (req, res) {
         var messages = {
             required: req.language.required,
         }
-        if (middleware.checkValidation(res, request, rules, messages)) {
-            auth.favorite(req, request, function (code, message, data) {
+        if (middleware.checkValidationRules(res, request, rules, messages)) {
+            auth.favorite(request, function (code, message, data) {
                 middleware.send_response(res, req, code, message, data);
             });
         }
@@ -174,45 +169,45 @@ router.post('/favorite', function (req, res) {
 });
 
 //Get Card Type API
-router.post('/cardtype', function (req, res) {
-    middleware.decryption(req.body, function (request) {
-        auth.cardTypes(req, function (code, message, data) {
-            middleware.send_response(res, req, code, message, data);
-        });
-    })
-});
+// router.post('/cardtype', function (req, res) {
+//     middleware.decryption(req.body, function (request) {
+//         auth.cardTypes(request, function (code, message, data) {
+//             middleware.send_response(res, req, code, message, data);
+//         });
+//     })
+// });
 
 //Get Saved Cards API
-router.post('/savedcards', function (req, res) {
-    middleware.decryption(req.body, function (request) {
-        auth.getSavedCards(req, function (code, message, data) {
-            middleware.send_response(res, req, code, message, data);
-        });
-    })
-});
+// router.post('/savedcards', function (req, res) {
+//     middleware.decryption(req.body, function (request) {
+//         auth.getSavedCards(request, function (code, message, data) {
+//             middleware.send_response(res, req, code, message, data);
+//         });
+//     })
+// });
 
 
 //Add Card API
-router.post('/cards', function (req, res) {
-    middleware.decryption(req.body, function (request) {
-        request.user_id = req.user_id;
-        var rules = {
-            card_holder_name: "required",
-            card_type: "required|in:credit_card,debit_card",
-            card_number: "required|numeric|digits_between:16,19",
-            expiry_date: "required"
-        };
-        var messages = {
-            "required": req.language.rest_keywords_required,
-            "in": req.language.rest_keywords_in,
-        };
-        if (middleware.checkValidation(res, request, rules, messages)) {
-            auth.addCard(request, function (code, message, data) {
-                middleware.send_response(res, req, code, message, data);
-            });
-        };
-    })
-});
+// router.post('/cards', function (req, res) {
+//     middleware.decryption(req.body, function (request) {
+//         request.user_id = req.user_id;
+//         var rules = {
+//             card_holder_name: "required",
+//             card_type: "required|in:credit_card,debit_card",
+//             card_number: "required|numeric|digits_between:16,19",
+//             expiry_date: "required"
+//         };
+//         var messages = {
+//             "required": req.language.rest_keywords_required,
+//             "in": req.language.rest_keywords_in,
+//         };
+//         if (middleware.checkValidationRules(res, request, rules, messages)) {
+//             auth.addCard(request, function (code, message, data) {
+//                 middleware.send_response(res, req, code, message, data);
+//             });
+//         };
+//     })
+// });
 
 
 var storage = multer.diskStorage({

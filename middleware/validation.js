@@ -10,7 +10,6 @@ var shakey = cryptoLib.getHashSha256(process.env.KEY, 32)
 var middleware = {
 
     checkValidationRules: function (res, request, rules, message) {
-        // console.log("QQQQQQQ",request.lang);
         const v = Validator.make(request, rules, message);
         if (v.fails()) {
             const errors = v.getErrors();
@@ -198,13 +197,14 @@ var middleware = {
         if (req != undefined && Object.keys(req).length !== 0) {
             try {
                 var request = JSON.parse(cryptoLib.decrypt(req, shakey, process.env.IV));
-                request.lang = req.lang;
+                // request.lang = req.lang;
                 callback(request);
-            } catch {
-                callback({});
+            } catch(error) {
+                console.log("Error : ", error)
+                callback('wqw');
             }
         } else {
-            callback({});
+            callback('abv');
         }
     },
 

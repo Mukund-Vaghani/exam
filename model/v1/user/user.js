@@ -73,7 +73,7 @@ var user = {
         };
         con.query(sql, [insertObject], function (error, result) {
             if (!error) {
-                callback("1", 'reser_keyword_card_add', null);
+                callback("1", 'reser_keyword_card_add', result);
             } else {
                 console.log(error);
                 callback("0",'reset_keyword_something_wrong_message', null)
@@ -97,10 +97,10 @@ var user = {
         var sql = `SELECT id,card_name FROM tbl_card_type`;
         con.query(sql, function (error, result) {
             if (!error && result.length > 0) {
-                callback("1", { keyword: "success", content: {} }, result)
+                callback("1",'reset_keyword_success_message', result)
             } else {
                 console.log(error);
-                callback("0", { keyword: "wrong", content: {} }, null)
+                callback("0",'reset_keyword_something_wrong_message', null)
             };
         });
     },
@@ -117,9 +117,9 @@ var user = {
         };
         con.query(sql, [insertObj], function (err, result) {
             if (!err) {
-                callback("1", { keyword: "product added to the cart!", content: {} }, null);
+                callback("1",'reset_keyword_success_message', null);
             } else {
-                callback("0", { keyword: "rest_keywords_nodata", content: {} }, null)
+                callback("0",'reset_keyword_something_wrong_message', null)
             };
         });
     },
@@ -145,10 +145,10 @@ var user = {
             con.query(`SELECT m.*,(6371 * acos ( cos (radians(${lattitude}) ) * cos( radians(m.latitude) ) * cos( radians(m.longitude ) - radians(${longitude}
                 ) ) + sin (radians(${lattitude}) ) * sin( radians(m.latitude ) ) ) ) AS distance FROM tbl_market m where is_active = 1 And is_delete = 0 HAVING distance < 10`, function (err, result) {
                 if (!err && result.length > 0) {
-                    callback("1", { keyword: "data found successfully", content: {} }, result);
+                    callback("1",'reset_keyword_success_message', result);
                 } else {
                     console.log(err);
-                    callback("0", { keyword: "rest_keywords_nodata", content: {} }, null)
+                    callback("0",'reset_keyword_something_wrong_message', null)
                 }
             })
         })
@@ -162,14 +162,14 @@ var user = {
                 product.getAddressDetails(address_id, function (Addressdata) {
                     // console.log("address", Addressdata)
                     if (Addressdata != null) {
-                        callback("1", { keyword: "data found successfully", content: {} }, Addressdata);
+                        callback("1",'reset_keyword_success_message', Addressdata);
                     } else {
-                        callback("0", { keyword: "rest_keywords_nodata", content: {} }, null)
+                        callback("0",'reset_keyword_something_wrong_message', null)
                     }
                 })
 
             } else {
-                callback("0", { keyword: "rest_keywords_nodata", content: {} }, null)
+                callback("0",'reset_keyword_something_wrong_message', null)
             }
 
         })
@@ -209,9 +209,9 @@ var user = {
         };
         con.query(sql, [insertObj], function (err, result) {
             if (!err) {
-                callback("1", { keyword: "Address Added successfully!", content: {} }, null);
+                callback("1",'reset_keyword_success_message', null);
             } else {
-                callback("0", { keyword: "rest_keywords_nodata", content: {} }, null)
+                callback("0",'reset_keyword_something_wrong_message', null)
             };
         });
     },
@@ -227,15 +227,14 @@ var user = {
             if (!err) {
                 product.getfavorite(result.insertId, function (data) {
                     if (data == null) {
-
-                        callback("0", { keyword: "wrong", content: {} }, null)
+                        callback("0",'reset_keyword_something_wrong_message', null)
                     } else {
-                        callback("1", { keyword: "success", content: {} }, data)
+                        callback("1",'reset_keyword_success_message', data)
                     }
                 })
             } else {
                 console.log(err);
-                callback("0", { keyword: "wrong", content: {} }, null)
+                callback("0",'reset_keyword_something_wrong_message', null)
             }
         })
     },
